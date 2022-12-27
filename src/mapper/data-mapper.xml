@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.DataMapper">
+
+	<insert id="dataWrite" parameterType="DataVO"
+		useGeneratedKeys="true" keyProperty="num">
+		
+		INSERT INTO DATA_TB
+			(LI, IT, IH, ST, SH, PU, HU, HE, CO) 
+		VALUES
+			(#{li}, #{it}, #{ih}, #{st}, #{sh}, #{pu}, #{hu}, #{he}, #{co})
+	
+	</insert>
+	
+	<select id="currentNum" resultType="int" parameterType="int">
+
+		SELECT
+			MAX(NUM)
+		FROM
+			DATA_TB
+
+	</select>
+	
+	<select id="currentData" resultType="DataVO" parameterType="int">
+
+		SELECT *
+		FROM DATA_TB
+		WHERE NUM = #{num}
+
+	</select>
+	
+	<delete id="dataDel">
+		DELETE
+		FROM DATA_TB
+	</delete>
+	
+	<select id="currentCount" resultType="int" parameterType="int">
+
+		SELECT 
+			COUNT(*) 
+		FROM
+			DATA_TB
+
+	</select>
+	
+	<delete id="oldDataDel">
+		DELETE 
+		FROM DATA_TB 
+		WHERE NUM = 1
+	</delete>
+	
+	<update id="dataResort">
+		
+		UPDATE DATA_TB SET NUM = NUM - 1
+		
+	</update>
+	
+	<update id="autoReset" parameterType="int">
+		ALTER TABLE DATA_TB AUTO_INCREMENT=#{ai}
+	</update>
+	
+	<select id="realtimeData" resultType="DataVO" parameterType="int">
+	
+		<if test="count lt 20">
+			SELECT
+				*
+			FROM
+				DATA_TB
+			ORDER BY 
+				NUM ASC		
+			LIMIT
+				0, #{count}
+		</if>
+		<if test="count gte 20">
+			SELECT 
+				* 
+			FROM 
+				(SELECT * FROM DATA_TB ORDER BY NUM DESC LIMIT 20) AS T 
+			ORDER BY 
+				NUM ASC;
+		</if>		
+
+	</select>	
+
+</mapper>
